@@ -27,9 +27,9 @@ app.get('/api/accelerometer', async (req, res) => {
 
         // Extract accelerometer properties (replace these with your actual property names)
         const accelerometerData = {
-            x: twinData.contents.x,
-            y: twinData.contents.y,
-            z: twinData.contents.z,
+            x: twinData.contents[0].x,
+            y: twinData.contents[1].y,
+            z: twinData.contents[2].z,
         };
 
         res.json(accelerometerData);
@@ -55,9 +55,9 @@ io.on('connection', (socket) => {
 
             // Extract accelerometer properties for real-time updates
             const realTimeAccelerometerData = {
-                x: twinData.contents.x,
-                y: twinData.contents.y,
-                z: twinData.contents.z,
+                x: twinData.contents[0].x,
+                y: twinData.contents[1].y,
+                z: twinData.contents[2].z,
             };
 
             socket.emit('accelerometerData', realTimeAccelerometerData);
