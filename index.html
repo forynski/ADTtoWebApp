@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accelerometer Data App</title>
+</head>
+<body>
+    <h1>Accelerometer Data</h1>
+    <div id="accelerometerData">
+        <p>X: <span id="xValue">-</span></p>
+        <p>Y: <span id="yValue">-</span></p>
+        <p>Z: <span id="zValue">-</span></p>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>const socket = io();
+
+        socket.on('accelerometerData', (data) => {
+            // Update the X, Y, and Z values in the HTML
+            $('#xValue').text(data.x);
+            $('#yValue').text(data.y);
+            $('#zValue').text(data.z);
+        });</script>
+</body>
+</html>
