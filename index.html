@@ -18,6 +18,7 @@
     <script>const socket = io();
 
         socket.on('accelerometerData', (data) => {
+            console.log('Received real-time accelerometer data:', data);
             // Update the X, Y, and Z values in the HTML
             $('#xValue').text(data.x);
             $('#yValue').text(data.y);

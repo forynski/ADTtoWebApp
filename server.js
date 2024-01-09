@@ -24,6 +24,7 @@ app.get('/api/accelerometer', async (req, res) => {
     try {
         // Fetch accelerometer data from Azure Digital Twins
         const twinData = await digitalTwinsClient.getDigitalTwin(digitalTwinID);
+        console.log('Fetched accelerometer data:', twinData);
 
         // Extract accelerometer properties (replace these with your actual property names)
         const accelerometerData = {
@@ -52,6 +53,7 @@ io.on('connection', (socket) => {
     setInterval(async () => {
         try {
             const twinData = await digitalTwinsClient.getDigitalTwin(digitalTwinID);
+            console.log('Fetched real-time accelerometer data:', twinData);
 
             // Extract accelerometer properties for real-time updates
             const realTimeAccelerometerData = {
@@ -60,6 +62,7 @@ io.on('connection', (socket) => {
                 z: twinData.contents[2].z,
             };
 
+            console.log('Emitting real-time accelerometer data:', realTimeAccelerometerData);
             socket.emit('accelerometerData', realTimeAccelerometerData);
         } catch (error) {
             console.error('Error fetching real-time accelerometer data:', error);
@@ -76,4 +79,3 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
