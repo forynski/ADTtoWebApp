@@ -47,11 +47,11 @@ app.get('/api/accelerometer', async (req, res) => {
         // Log the entire twinData object
         console.log('Fetched accelerometer data:', twinData);
 
-        // Access properties directly if possible
+        // Access properties based on the model information
         const accelerometerData = {
-            x: twinData.contents?.x || 'N/A',
-            y: twinData.contents?.y || 'N/A',
-            z: twinData.contents?.z || 'N/A',
+            x: getValueFromContents(twinData.contents, 'x'),
+            y: getValueFromContents(twinData.contents, 'y'),
+            z: getValueFromContents(twinData.contents, 'z'),
         };
 
         // Respond with the accelerometer data
@@ -73,6 +73,13 @@ app.get('/api/accelerometer', async (req, res) => {
         });
     }
 });
+
+// Function to extract property value from contents array
+const getValueFromContents = (contents, propertyName) => {
+    const property = contents.find(prop => prop.name === propertyName);
+    return property ? property.value : 'N/A';
+};
+
 
 
 // Start the server
