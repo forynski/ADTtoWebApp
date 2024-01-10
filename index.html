@@ -13,16 +13,27 @@
         <p>Z: <span id="zValue">Loading...</span></p>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>const socket = io();
+    <script>// Function to update accelerometer data
+        const updateAccelerometerData = () => {
+            // Make an AJAX request to fetch accelerometer data
+            $.get('/api/accelerometer', (data) => {
+                // Update the X, Y, and Z values in the HTML
+                $('#xValue').text(data.x);
+                $('#yValue').text(data.y);
+                $('#zValue').text(data.z);
 
-        socket.on('accelerometerData', (data) => {
-            console.log('Received real-time accelerometer data:', data);
-            // Update the X, Y, and Z values in the HTML
-            $('#xValue').text(data.x);
-            $('#yValue').text(data.y);
-            $('#zValue').text(data.z);
-        });</script>
+                // Schedule the next update after a delay (e.g., 2 seconds)
+                setTimeout(updateAccelerometerData, 2000);
+            }).fail((error) => {
+                console.error('Error fetching accelerometer data:', error);
+
+                // Handle errors and schedule the next update
+                setTimeout(updateAccelerometerData, 2000);
+            });
+        };
+
+        // Initial update
+        updateAccelerometerData();</script>
 </body>
 </html>
