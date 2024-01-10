@@ -68,10 +68,11 @@ app.get('/api/accelerometer', async (req, res) => {
 
         // Extract accelerometer data from the response
         const accelerometerData = {
-            x: getValueFromContents(twinData, 'x'),
-            y: getValueFromContents(twinData, 'y'),
-            z: getValueFromContents(twinData, 'z'),
+            x: twinData.body.x,
+            y: twinData.body.y,
+            z: twinData.body.z,
         };
+
 
         // Respond with the accelerometer data
         res.json(accelerometerData);
