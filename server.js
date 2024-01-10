@@ -47,11 +47,11 @@ app.get('/api/accelerometer', async (req, res) => {
         // Log fetched accelerometer data
         console.log('Fetched accelerometer data:', twinData);
 
-        // Extract accelerometer data from the response
+        // Check if twinData.contents is defined and has elements before accessing properties
         const accelerometerData = {
-            x: twinData.contents[0]?.x || 'N/A',
-            y: twinData.contents[1]?.y || 'N/A',
-            z: twinData.contents[2]?.z || 'N/A',
+            x: twinData.contents && twinData.contents[0]?.x || 'N/A',
+            y: twinData.contents && twinData.contents[1]?.y || 'N/A',
+            z: twinData.contents && twinData.contents[2]?.z || 'N/A',
         };
 
         // Respond with the accelerometer data
