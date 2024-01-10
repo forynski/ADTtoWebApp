@@ -10,8 +10,13 @@ const server = http.createServer(app);
 // Azure Digital Twins configuration
 const endpointUrl = process.env.YOUR_DIGITAL_TWINS_ENDPOINT_URL;
 const digitalTwinID = process.env.DIGITAL_TWIN_ID;
-const credential = new DefaultAzureCredential();
 
+if (!endpointUrl || !digitalTwinID) {
+    console.error('Please provide values for YOUR_DIGITAL_TWINS_ENDPOINT_URL and DIGITAL_TWIN_ID in the environment variables.');
+    process.exit(1);
+}
+
+const credential = new DefaultAzureCredential();
 const digitalTwinsClient = new DigitalTwinsClient(endpointUrl, credential);
 
 // Serve static files from the main directory
@@ -36,8 +41,17 @@ app.get('/api/accelerometer', async (req, res) => {
         // Log the entire error object, including the stack trace
         console.error(error);
 
+        // Log specific details from the error object
+        console.error('Error details:', error.message, error.code, error.statusCode);
+
         // Send a more detailed error response to help diagnose the issue
-        res.status(500).json({ error: 'Internal Server Error', details: error.message, stack: error.stack });
+        res.status(500).json({
+            error: 'Internal Server Error',
+            details: error.message,
+            stack: error.stack,
+            code: error.code,
+            statusCode: error.statusCode,
+        });
     }
 });
 
