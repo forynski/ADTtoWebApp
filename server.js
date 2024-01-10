@@ -32,10 +32,15 @@ const connectToAzureDigitalTwins = async () => {
 // Serve static files from the main directory
 app.use(express.static(path.join(__dirname)));
 
-// Define a function to get a value from contents array
+/// Define a function to get a value from contents array
 const getValueFromContents = (contents, propertyName) => {
-    const property = contents.find(item => item['@type'] === 'Property' && item.name === propertyName);
-    return property ? property[propertyName] : 'N/A';
+    console.log('contents:', contents); // Add this line for debugging
+    if (contents && contents.length > 0) {
+        const property = contents.find(item => item['@type'] === 'Property' && item.name === propertyName);
+        return property ? property[propertyName] : 'N/A';
+    } else {
+        return 'N/A';
+    }
 };
 
 // API endpoint to fetch accelerometer data
@@ -76,6 +81,7 @@ app.get('/api/accelerometer', async (req, res) => {
         });
     }
 });
+
 
 
 // Start the server
