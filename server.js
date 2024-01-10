@@ -32,6 +32,12 @@ const connectToAzureDigitalTwins = async () => {
 // Serve static files from the main directory
 app.use(express.static(path.join(__dirname)));
 
+// Function to extract property value from contents array
+const getValueFromContents = (contents, propertyName) => {
+    const property = contents.find(prop => prop.name === propertyName);
+    return property ? property.value : 'N/A';
+};
+
 // API endpoint to fetch accelerometer data
 app.get('/api/accelerometer', async (req, res) => {
     try {
@@ -44,10 +50,10 @@ app.get('/api/accelerometer', async (req, res) => {
         const digitalTwinID = process.env.DIGITAL_TWIN_ID;
         const twinData = await digitalTwinsClient.getDigitalTwin(digitalTwinID);
 
-        // Log the entire twinData object
+        // Log fetched accelerometer data
         console.log('Fetched accelerometer data:', twinData);
 
-        // Access properties based on the model information
+        // Extract accelerometer data from the response
         const accelerometerData = {
             x: getValueFromContents(twinData.contents, 'x'),
             y: getValueFromContents(twinData.contents, 'y'),
@@ -60,9 +66,6 @@ app.get('/api/accelerometer', async (req, res) => {
         // Log the error information
         console.error('Error fetching accelerometer data:', error);
 
-        // Log specific details from the error object
-        console.error('Error details:', error.message, error.code, error.statusCode);
-
         // Send a detailed error response to help diagnose the issue
         res.status(500).json({
             error: 'Internal Server Error',
@@ -73,14 +76,6 @@ app.get('/api/accelerometer', async (req, res) => {
         });
     }
 });
-
-// Function to extract property value from contents array
-const getValueFromContents = (contents, propertyName) => {
-    const property = contents.find(prop => prop.name === propertyName);
-    return property ? property.value : 'N/A';
-};
-
-
 
 // Start the server
 const PORT = process.env.PORT || 3000;
