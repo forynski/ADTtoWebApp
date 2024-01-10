@@ -33,15 +33,23 @@ const connectToAzureDigitalTwins = async () => {
 app.use(express.static(path.join(__dirname)));
 
 /// Define a function to get a value from contents array
+// Define a function to get a value from contents array
 const getValueFromContents = (contents, propertyName) => {
-    console.log('contents:', contents); // Add this line for debugging
-    if (contents && contents.length > 0) {
+    if (contents && Array.isArray(contents) && contents.length > 0) {
         const property = contents.find(item => item['@type'] === 'Property' && item.name === propertyName);
-        return property ? property[propertyName] : 'N/A';
+
+        if (property && propertyName in property) {
+            return property[propertyName];
+        } else {
+            console.log(`Property '${propertyName}' not found in the contents.`);
+            return 'N/A';
+        }
     } else {
+        console.log('Contents array is undefined or empty.');
         return 'N/A';
     }
 };
+
 
 // API endpoint to fetch accelerometer data
 app.get('/api/accelerometer', async (req, res) => {
