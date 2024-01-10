@@ -7,17 +7,27 @@ const { DigitalTwinsClient } = require('@azure/digital-twins-core');
 const app = express();
 const server = http.createServer(app);
 
-// Azure Digital Twins configuration
-const endpointUrl = process.env.YOUR_DIGITAL_TWINS_ENDPOINT_URL;
-const digitalTwinID = process.env.DIGITAL_TWIN_ID;
+let digitalTwinsClient;
 
-if (!endpointUrl || !digitalTwinID) {
-    console.error('Please provide values for YOUR_DIGITAL_TWINS_ENDPOINT_URL and DIGITAL_TWIN_ID in the environment variables.');
-    process.exit(1);
-}
+// Function to establish the connection with Azure Digital Twins
+const connectToAzureDigitalTwins = async () => {
+    try {
+        const endpointUrl = process.env.YOUR_DIGITAL_TWINS_ENDPOINT_URL;
 
-const credential = new DefaultAzureCredential();
-const digitalTwinsClient = new DigitalTwinsClient(endpointUrl, credential);
+        if (!endpointUrl) {
+            console.error('Please provide a value for YOUR_DIGITAL_TWINS_ENDPOINT_URL in the environment variables.');
+            process.exit(1);
+        }
+
+        const credential = new DefaultAzureCredential();
+        digitalTwinsClient = new DigitalTwinsClient(endpointUrl, credential);
+
+        console.log('Connected to Azure Digital Twins');
+    } catch (error) {
+        console.error('Error connecting to Azure Digital Twins:', error);
+        process.exit(1);
+    }
+};
 
 // Serve static files from the main directory
 app.use(express.static(path.join(__dirname)));
@@ -25,26 +35,35 @@ app.use(express.static(path.join(__dirname)));
 // API endpoint to fetch accelerometer data
 app.get('/api/accelerometer', async (req, res) => {
     try {
+        // Check if the client is connected, and if not, establish the connection
+        if (!digitalTwinsClient) {
+            await connectToAzureDigitalTwins();
+        }
+
+        // Fetch accelerometer data from the Digital Twin
+        const digitalTwinID = process.env.DIGITAL_TWIN_ID;
         const twinData = await digitalTwinsClient.getDigitalTwin(digitalTwinID);
+
+        // Log fetched accelerometer data
         console.log('Fetched accelerometer data:', twinData);
 
+        // Extract accelerometer data from the response
         const accelerometerData = {
             x: twinData.contents[0]?.x || 'N/A',
             y: twinData.contents[1]?.y || 'N/A',
             z: twinData.contents[2]?.z || 'N/A',
         };
 
+        // Respond with the accelerometer data
         res.json(accelerometerData);
     } catch (error) {
+        // Log the error information
         console.error('Error fetching accelerometer data:', error);
-
-        // Log the entire error object, including the stack trace
-        console.error(error);
 
         // Log specific details from the error object
         console.error('Error details:', error.message, error.code, error.statusCode);
 
-        // Send a more detailed error response to help diagnose the issue
+        // Send a detailed error response to help diagnose the issue
         res.status(500).json({
             error: 'Internal Server Error',
             details: error.message,
@@ -57,6 +76,15 @@ app.get('/api/accelerometer', async (req, res) => {
 
 // Start the server
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+
+// Call the connectToAzureDigitalTwins function before starting the server
+connectToAzureDigitalTwins()
+    .then(() => {
+        server.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error('Error during server startup:', error);
+        process.exit(1);
+    });
