@@ -32,23 +32,23 @@ const connectToAzureDigitalTwins = async () => {
 // Serve static files from the main directory
 app.use(express.static(path.join(__dirname)));
 
-/// Define a function to get a value from contents array
-// Define a function to get a value from contents array
+/// Define a function to get a value from contents
 const getValueFromContents = (contents, propertyName) => {
-    if (contents && Array.isArray(contents) && contents.length > 0) {
-        const property = contents.find(item => item['@type'] === 'Property' && item.name === propertyName);
+    if (contents && contents.body) {
+        const property = contents.body[propertyName];
 
-        if (property && propertyName in property) {
-            return property[propertyName];
+        if (property !== undefined) {
+            return property;
         } else {
             console.log(`Property '${propertyName}' not found in the contents.`);
             return 'N/A';
         }
     } else {
-        console.log('Contents array is undefined or empty.');
+        console.log('Contents array or body property is undefined.');
         return 'N/A';
     }
 };
+
 
 
 // API endpoint to fetch accelerometer data
@@ -68,9 +68,9 @@ app.get('/api/accelerometer', async (req, res) => {
 
         // Extract accelerometer data from the response
         const accelerometerData = {
-            x: getValueFromContents(twinData.contents, 'x'),
-            y: getValueFromContents(twinData.contents, 'y'),
-            z: getValueFromContents(twinData.contents, 'z'),
+            x: getValueFromContents(twinData, 'x'),
+            y: getValueFromContents(twinData, 'y'),
+            z: getValueFromContents(twinData, 'z'),
         };
 
         // Respond with the accelerometer data
