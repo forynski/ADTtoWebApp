@@ -44,7 +44,7 @@ app.get('/api/accelerometer', async (req, res) => {
         const digitalTwinID = process.env.DIGITAL_TWIN_ID;
         const twinData = await digitalTwinsClient.getDigitalTwin(digitalTwinID);
 
-        // Log fetched accelerometer data
+        // Log the entire twinData object
         console.log('Fetched accelerometer data:', twinData);
 
         // Access properties directly if possible
@@ -73,6 +73,7 @@ app.get('/api/accelerometer', async (req, res) => {
         });
     }
 });
+
 
 // Start the server
 const PORT = process.env.PORT || 3000;
