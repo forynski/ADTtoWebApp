@@ -23,9 +23,9 @@
         const updateAccelerometerData = () => {
             // Check if data fetching is started
             if (isFetchingStarted) {
-                // Make an AJAX request to fetch accelerometer data using HTTPS
+                // Make an AJAX request to fetch accelerometer data using the relative path
                 $.ajax({
-                    url: 'https://adttowebapp.azurewebsites.net/api/accelerometer',  // Replace with your server domain
+                    url: '/api/accelerometer',  // Relative path
                     method: 'GET',
                     dataType: 'json',
                     success: (data) => {
