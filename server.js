@@ -16,31 +16,24 @@ const credential = new DefaultAzureCredential();
 
 const digitalTwinsClient = new DigitalTwinsClient(endpointUrl, credential);
 
-// Serve static files from the root directory
+// Serve static files from the main directory
 app.use(express.static(path.join(__dirname)));
 
 // API endpoint to fetch accelerometer data
 app.get('/api/accelerometer', async (req, res) => {
     try {
-        // Fetch accelerometer data from Azure Digital Twins
         const twinData = await digitalTwinsClient.getDigitalTwin(digitalTwinID);
         console.log('Fetched accelerometer data:', twinData);
 
-        // Extract accelerometer properties (replace these with your actual property names)
         const accelerometerData = {
-            x: twinData.contents[0].x,
-            y: twinData.contents[1].y,
-            z: twinData.contents[2].z,
+            x: twinData.contents[0]?.x || 'N/A',
+            y: twinData.contents[1]?.y || 'N/A',
+            z: twinData.contents[2]?.z || 'N/A',
         };
 
         res.json(accelerometerData);
     } catch (error) {
         console.error('Error fetching accelerometer data:', error);
-
-        // Log the entire error object, including the stack trace
-        console.error(error);
-
-        // Send a more detailed error response to help diagnose the issue
         res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 });
@@ -50,16 +43,14 @@ io.on('connection', (socket) => {
     console.log('A client connected');
 
     // Example: Emit data to the client every 2 seconds
-    setInterval(async () => {
+    const sendRealTimeData = async () => {
         try {
             const twinData = await digitalTwinsClient.getDigitalTwin(digitalTwinID);
-            console.log('Fetched real-time accelerometer data:', twinData);
 
-            // Extract accelerometer properties for real-time updates
             const realTimeAccelerometerData = {
-                x: twinData.contents[0].x,
-                y: twinData.contents[1].y,
-                z: twinData.contents[2].z,
+                x: twinData.contents[0]?.x || 'N/A',
+                y: twinData.contents[1]?.y || 'N/A',
+                z: twinData.contents[2]?.z || 'N/A',
             };
 
             console.log('Emitting real-time accelerometer data:', realTimeAccelerometerData);
@@ -67,10 +58,18 @@ io.on('connection', (socket) => {
         } catch (error) {
             console.error('Error fetching real-time accelerometer data:', error);
         }
-    }, 2000);
+    };
+
+    // Initial data on connection
+    sendRealTimeData();
+
+    // Schedule periodic updates
+    const updateInterval = setInterval(sendRealTimeData, 2000);
 
     socket.on('disconnect', () => {
         console.log('Client disconnected');
+        // Clear the update interval when the client disconnects
+        clearInterval(updateInterval);
     });
 });
 
