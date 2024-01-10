@@ -31,7 +31,7 @@ app.get('/api/accelerometer', async (req, res) => {
 
         res.json(accelerometerData);
     } catch (error) {
-        console.error('Error fetching accelerometer data:', error);
+        console.error('Error fetching accelerometer data:', error.message);
         res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 });

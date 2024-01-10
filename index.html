@@ -16,48 +16,33 @@
     <button id="toggleFetching">Start Fetching Data</button>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script>// Variable to track whether data fetching is started
-        let isFetchingStarted = false;
+    <script>let isFetchingStarted = false;
 
-        // Function to update accelerometer data
         const updateAccelerometerData = () => {
-            // Check if data fetching is started
             if (isFetchingStarted) {
-                // Make an AJAX request to fetch accelerometer data using the relative path
                 $.ajax({
-                    url: '/api/accelerometer',  // Relative path
+                    url: '/api/accelerometer',
                     method: 'GET',
                     dataType: 'json',
                     success: (data) => {
-                        // Update the X, Y, and Z values in the HTML
                         $('#xValue').text(data.x);
                         $('#yValue').text(data.y);
                         $('#zValue').text(data.z);
-
-                        // Schedule the next update after a delay (e.g., 2 seconds)
                         setTimeout(updateAccelerometerData, 2000);
                     },
                     error: (xhr, status, error) => {
-                        // Log the detailed error information
                         console.error('Error fetching accelerometer data:', xhr, status, error);
-
-                        // Handle errors and schedule the next update
                         setTimeout(updateAccelerometerData, 2000);
                     }
                 });
             }
         };
 
-        // Event handler for the button click
         $('#toggleFetching').click(() => {
-            // Toggle the flag to start or stop data fetching
             isFetchingStarted = !isFetchingStarted;
-
-            // Update the button label based on the current state
             const buttonLabel = isFetchingStarted ? 'Stop Fetching Data' : 'Start Fetching Data';
             $('#toggleFetching').text(buttonLabel);
 
-            // If fetching is started, initiate the data fetching
             if (isFetchingStarted) {
                 updateAccelerometerData();
             }
