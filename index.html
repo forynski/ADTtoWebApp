@@ -57,16 +57,27 @@
 
         // Function to update chart data
         const updateChart = (data) => {
+            // Check if data is an array and has valid elements
+            if (!Array.isArray(data) || data.length === 0 || isNaN(data[0].x) || isNaN(data[0].y) || isNaN(data[0].z) || isNaN(new Date(data[0].time))) {
+                console.error('Invalid data for chart:', data);
+                return;
+            }
+
             // Your existing logic to update HTML elements
 
             // Update the chart
             x.domain(d3.extent(data, d => new Date(d.time)));
             y.domain([-10, 10]);
 
+            g.selectAll(".lineX").remove();
+            g.selectAll(".lineY").remove();
+            g.selectAll(".lineZ").remove();
+
             g.append("path").data([data]).attr("class", "lineX").style("stroke", "steelblue").attr("d", lineX);
             g.append("path").data([data]).attr("class", "lineY").style("stroke", "green").attr("d", lineY);
             g.append("path").data([data]).attr("class", "lineZ").style("stroke", "red").attr("d", lineZ);
         };
+
 
         // Function to fetch accelerometer data and update both the HTML and chart
         const updateAccelerometerData = () => {
