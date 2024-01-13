@@ -18,7 +18,7 @@
     <button id="toggleFetching">Start Fetching Data</button>
 
     <!-- Add a canvas element for the chart -->
-    <canvas id="accelerometerChart" width="800" height="400"></canvas>
+    <canvas id="accelerometerChart" width="800" height="600"></canvas>
 
     <script>let isFetchingStarted = false;
 
@@ -33,12 +33,31 @@
                         $('#yValue').text(data.y);
                         $('#zValue').text(data.z);
 
-                        // Update every 2s (2000) or 0.2 (200)
-                        setTimeout(updateAccelerometerData, 200);
+                        // Update the chart
+                        const time = new Date().toLocaleTimeString(); // or use timestamps
+                        accelerometerChart.data.labels.push(time);
+                        accelerometerChart.data.datasets[0].data.push(data.x);
+                        accelerometerChart.data.datasets[1].data.push(data.y);
+                        accelerometerChart.data.datasets[2].data.push(data.z);
+
+                        // Limit the number of data points shown to keep it lightweight
+                        const maxDataPoints = 10;
+                        while (accelerometerChart.data.labels.length > maxDataPoints) {
+                            accelerometerChart.data.labels.shift();
+                            accelerometerChart.data.datasets[0].data.shift();
+                            accelerometerChart.data.datasets[1].data.shift();
+                            accelerometerChart.data.datasets[2].data.shift();
+                        }
+
+                        // Update the chart
+                        accelerometerChart.update();
+
+                        // Continue fetching every 2 seconds
+                        setTimeout(updateAccelerometerData, 2000);
                     },
                     error: (xhr, status, error) => {
                         console.error('Error fetching accelerometer data:', xhr, status, error);
-                        setTimeout(updateAccelerometerData, 200);
+                        setTimeout(updateAccelerometerData, 2000);
                     }
                 });
             }
