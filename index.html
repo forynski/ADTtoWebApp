@@ -6,15 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accelerometer Data App</title>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.12.0/chart.min.js" type="text/javascript"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
     <style>
         body {
             margin: 0;
             overflow: hidden;
         }
 
-        canvas {
+        svg {
             display: block;
+            margin-top: 20px;
+            margin-left: 50px;
         }
     </style>
 </head>
@@ -29,63 +31,39 @@
 
     <button id="toggleFetching">Start Fetching Data</button>
 
-    <!-- Add a canvas for the chart -->
-    <canvas id="accelerometerChart"></canvas>
+    <!-- Add an SVG element for the chart -->
+    <svg id="accelerometerChart" width="800" height="400"></svg>
 
     <script>let isFetchingStarted = false;
 
-        // Initialize Chart.js configuration
-        const ctx = document.getElementById('accelerometerChart').getContext('2d');
-        const accelerometerChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [
-                    {
-                        label: 'X-axis',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        data: [],
-                    },
-                    {
-                        label: 'Y-axis',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        data: [],
-                    },
-                    {
-                        label: 'Z-axis',
-                        borderColor: 'rgba(255, 206, 86, 1)',
-                        data: [],
-                    },
-                ],
-            },
-            options: {
-                scales: {
-                    x: {
-                        type: 'linear',
-                        position: 'bottom',
-                    },
-                    y: {
-                        min: -10,
-                        max: 10,
-                    },
-                },
-            },
-        });
+        // Initialize D3.js variables
+        const svg = d3.select("#accelerometerChart");
+        const margin = { top: 20, right: 20, bottom: 30, left: 50 };
+        const width = +svg.attr("width") - margin.left - margin.right;
+        const height = +svg.attr("height") - margin.top - margin.bottom;
+
+        const g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        const x = d3.scaleLinear().rangeRound([0, width]);
+        const y = d3.scaleLinear().rangeRound([height, 0]);
+
+        const lineX = d3.line().x(d => x(d.time)).y(d => y(d.x));
+        const lineY = d3.line().x(d => x(d.time)).y(d => y(d.y));
+        const lineZ = d3.line().x(d => x(d.time)).y(d => y(d.z));
 
         // Function to update chart data
         const updateChart = (data) => {
-            const timeNow = new Date().toLocaleTimeString();
-
-            // Add a new timestamp to labels
-            accelerometerChart.data.labels.push(timeNow);
-
-            // Add data points to each dataset
-            accelerometerChart.data.datasets[0].data.push(data.x);
-            accelerometerChart.data.datasets[1].data.push(data.y);
-            accelerometerChart.data.datasets[2].data.push(data.z);
+            // Your existing logic to update HTML elements
 
             // Update the chart
-            accelerometerChart.update();
+            x.domain(d3.extent(data, d => d.time));
+            y.domain([-10, 10]);
+
+            g.selectAll("*").remove(); // Clear existing elements
+
+            g.append("path").data([data]).attr("class", "line").style("stroke", "steelblue").attr("d", lineX);
+            g.append("path").data([data]).attr("class", "line").style("stroke", "green").attr("d", lineY);
+            g.append("path").data([data]).attr("class", "line").style("stroke", "red").attr("d", lineZ);
         };
 
         // Function to fetch accelerometer data and update both the HTML and chart
