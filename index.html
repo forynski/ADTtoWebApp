@@ -18,12 +18,16 @@
             margin-top: 20px;
             margin-left: 50px;
         }
+
+        #dataSection {
+            margin-left: 20px;
+        }
     </style>
 </head>
 
 <body>
     <h1>Accelerometer Data</h1>
-    <div id="accelerometerData">
+    <div id="accelerometerData" id="dataSection">
         <p>X: <span id="xValue">-</span></p>
         <p>Y: <span id="yValue">-</span></p>
         <p>Z: <span id="zValue">-</span></p>
@@ -44,26 +48,24 @@
 
         const g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        const x = d3.scaleLinear().rangeRound([0, width]);
-        const y = d3.scaleLinear().rangeRound([height, 0]);
+        const x = d3.scaleTime().range([0, width]);
+        const y = d3.scaleLinear().range([height, 0]);
 
-        const lineX = d3.line().x(d => x(d.time)).y(d => y(d.x));
-        const lineY = d3.line().x(d => x(d.time)).y(d => y(d.y));
-        const lineZ = d3.line().x(d => x(d.time)).y(d => y(d.z));
+        const lineX = d3.line().x(d => x(new Date(d.time))).y(d => y(d.x));
+        const lineY = d3.line().x(d => x(new Date(d.time))).y(d => y(d.y));
+        const lineZ = d3.line().x(d => x(new Date(d.time))).y(d => y(d.z));
 
         // Function to update chart data
         const updateChart = (data) => {
             // Your existing logic to update HTML elements
 
             // Update the chart
-            x.domain(d3.extent(data, d => d.time));
+            x.domain(d3.extent(data, d => new Date(d.time)));
             y.domain([-10, 10]);
 
-            g.selectAll("*").remove(); // Clear existing elements
-
-            g.append("path").data([data]).attr("class", "line").style("stroke", "steelblue").attr("d", lineX);
-            g.append("path").data([data]).attr("class", "line").style("stroke", "green").attr("d", lineY);
-            g.append("path").data([data]).attr("class", "line").style("stroke", "red").attr("d", lineZ);
+            g.append("path").data([data]).attr("class", "lineX").style("stroke", "steelblue").attr("d", lineX);
+            g.append("path").data([data]).attr("class", "lineY").style("stroke", "green").attr("d", lineY);
+            g.append("path").data([data]).attr("class", "lineZ").style("stroke", "red").attr("d", lineZ);
         };
 
         // Function to fetch accelerometer data and update both the HTML and chart
@@ -79,7 +81,7 @@
                     $('#zValue').text(data.z);
 
                     // Update the chart
-                    updateChart(data);
+                    updateChart([data]); // Assuming the data is a single data point
 
                     // Continue fetching every 2 seconds
                     setTimeout(updateAccelerometerData, 2000);
