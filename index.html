@@ -72,12 +72,13 @@
                     method: 'GET',
                     dataType: 'json',
                     success: (data) => {
-                        $('#xValue').text(data.x);
-                        $('#yValue').text(data.y);
-                        $('#zValue').text(data.z);
+                        console.log('Received accelerometer data:', data);
 
                         // Update the chart
                         const time = new Date().toLocaleTimeString(); // or use timestamps
+                        console.log('Chart labels before update:', accelerometerChart.data.labels);
+                        console.log('Chart data before update:', accelerometerChart.data.datasets[0].data);
+
                         accelerometerChart.data.labels.push(time);
                         accelerometerChart.data.datasets[0].data.push(data.x);
                         accelerometerChart.data.datasets[1].data.push(data.y);
@@ -94,6 +95,9 @@
 
                         // Update the chart
                         accelerometerChart.update();
+
+                        console.log('Chart labels after update:', accelerometerChart.data.labels);
+                        console.log('Chart data after update:', accelerometerChart.data.datasets[0].data);
 
                         // Continue fetching every 2 seconds
                         setTimeout(updateAccelerometerData, 2000);
