@@ -95,12 +95,12 @@
                         // Update the chart
                         accelerometerChart.update();
 
-                        // Continue fetching every 0.2 seconds
-                        setTimeout(updateAccelerometerData, 200);
+                        // Continue fetching every 2 seconds
+                        setTimeout(updateAccelerometerData, 2000);
                     },
                     error: (xhr, status, error) => {
                         console.error('Error fetching accelerometer data:', xhr, status, error);
-                        setTimeout(updateAccelerometerData, 200);
+                        setTimeout(updateAccelerometerData, 2000);
                     }
                 });
             }
