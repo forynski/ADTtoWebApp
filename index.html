@@ -1,10 +1,14 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accelerometer Data App</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <h1>Accelerometer Data</h1>
     <div id="accelerometerData">
@@ -15,8 +19,51 @@
 
     <button id="toggleFetching">Start Fetching Data</button>
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Add a canvas element for the chart -->
+    <canvas id="accelerometerChart" width="800" height="400"></canvas>
+
     <script>let isFetchingStarted = false;
+
+        // Initialize Chart.js
+        const ctx = document.getElementById('accelerometerChart').getContext('2d');
+        const accelerometerChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [], // You can add timestamps or labels here
+                datasets: [
+                    {
+                        label: 'X',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        data: [],
+                    },
+                    {
+                        label: 'Y',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        data: [],
+                    },
+                    {
+                        label: 'Z',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        data: [],
+                    },
+                ],
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                    },
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        min: -10,
+                        max: 10,
+                    },
+                },
+            },
+        });
 
         const updateAccelerometerData = () => {
             if (isFetchingStarted) {
@@ -28,7 +75,27 @@
                         $('#xValue').text(data.x);
                         $('#yValue').text(data.y);
                         $('#zValue').text(data.z);
-                        // Update every 2s (2000) or 0.2 (200)
+
+                        // Update the chart
+                        const time = new Date().toLocaleTimeString(); // or use timestamps
+                        accelerometerChart.data.labels.push(time);
+                        accelerometerChart.data.datasets[0].data.push(data.x);
+                        accelerometerChart.data.datasets[1].data.push(data.y);
+                        accelerometerChart.data.datasets[2].data.push(data.z);
+
+                        // Limit the number of data points shown to keep it lightweight
+                        const maxDataPoints = 10;
+                        while (accelerometerChart.data.labels.length > maxDataPoints) {
+                            accelerometerChart.data.labels.shift();
+                            accelerometerChart.data.datasets[0].data.shift();
+                            accelerometerChart.data.datasets[1].data.shift();
+                            accelerometerChart.data.datasets[2].data.shift();
+                        }
+
+                        // Update the chart
+                        accelerometerChart.update();
+
+                        // Continue fetching every 0.2 seconds
                         setTimeout(updateAccelerometerData, 200);
                     },
                     error: (xhr, status, error) => {
@@ -49,4 +116,5 @@
             }
         });</script>
 </body>
+
 </html>
