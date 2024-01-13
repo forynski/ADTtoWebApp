@@ -1,10 +1,24 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accelerometer Data App</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
 </head>
+
 <body>
     <h1>Accelerometer Data</h1>
     <div id="accelerometerData">
@@ -15,30 +29,91 @@
 
     <button id="toggleFetching">Start Fetching Data</button>
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Add a canvas for the chart -->
+    <canvas id="accelerometerChart"></canvas>
+
     <script>let isFetchingStarted = false;
 
-        const updateAccelerometerData = () => {
-            if (isFetchingStarted) {
-                $.ajax({
-                    url: '/api/accelerometer',
-                    method: 'GET',
-                    dataType: 'json',
-                    success: (data) => {
-                        $('#xValue').text(data.x);
-                        $('#yValue').text(data.y);
-                        $('#zValue').text(data.z);
-                        // Update every 2s (2000) or 0.2 (200)
-                        setTimeout(updateAccelerometerData, 200);
+        // Initialize Chart.js configuration
+        const ctx = document.getElementById('accelerometerChart').getContext('2d');
+        const accelerometerChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'X-axis',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        data: [],
                     },
-                    error: (xhr, status, error) => {
-                        console.error('Error fetching accelerometer data:', xhr, status, error);
-                        setTimeout(updateAccelerometerData, 200);
-                    }
-                });
-            }
+                    {
+                        label: 'Y-axis',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        data: [],
+                    },
+                    {
+                        label: 'Z-axis',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        data: [],
+                    },
+                ],
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                    },
+                    y: {
+                        min: -10,
+                        max: 10,
+                    },
+                },
+            },
+        });
+
+        // Function to update chart data
+        const updateChart = (data) => {
+            const timeNow = new Date().toLocaleTimeString();
+
+            // Add a new timestamp to labels
+            accelerometerChart.data.labels.push(timeNow);
+
+            // Add data points to each dataset
+            accelerometerChart.data.datasets[0].data.push(data.x);
+            accelerometerChart.data.datasets[1].data.push(data.y);
+            accelerometerChart.data.datasets[2].data.push(data.z);
+
+            // Update the chart
+            accelerometerChart.update();
         };
 
+        // Function to fetch accelerometer data and update both the HTML and chart
+        const updateAccelerometerData = () => {
+            $.ajax({
+                url: '/api/accelerometer',
+                method: 'GET',
+                dataType: 'json',
+                success: (data) => {
+                    // Update HTML elements
+                    $('#xValue').text(data.x);
+                    $('#yValue').text(data.y);
+                    $('#zValue').text(data.z);
+
+                    // Update the chart
+                    updateChart(data);
+
+                    // Continue fetching every 0.2 seconds
+                    setTimeout(updateAccelerometerData, 200);
+                },
+                error: (xhr, status, error) => {
+                    console.error('Error fetching accelerometer data:', xhr, status, error);
+                    setTimeout(updateAccelerometerData, 200);
+                }
+            });
+        };
+
+        // Toggle fetching data
         $('#toggleFetching').click(() => {
             isFetchingStarted = !isFetchingStarted;
             const buttonLabel = isFetchingStarted ? 'Stop Fetching Data' : 'Start Fetching Data';
@@ -49,4 +124,5 @@
             }
         });</script>
 </body>
+
 </html>
