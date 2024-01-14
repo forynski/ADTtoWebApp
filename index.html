@@ -7,15 +7,16 @@
 </head>
 <body>
     <h1>Accelerometer Data</h1>
+
+    <button id="toggleFetching">Start Fetching Data</button>
+
+    <canvas id="accelerometerChart" width="400" height="200"></canvas>
+
     <div id="accelerometerData">
         <p>X: <span id="xValue">-</span></p>
         <p>Y: <span id="yValue">-</span></p>
         <p>Z: <span id="zValue">-</span></p>
     </div>
-
-    <canvas id="accelerometerChart" width="400" height="200"></canvas>
-
-    <button id="toggleFetching">Start Fetching Data</button>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -88,7 +89,7 @@
             console.log('Chart Data Z:', accelerometerChart.data.datasets[2].data);
 
             // Update every 2s (2000) or 0.2 (200)
-            setTimeout(updateAccelerometerData, 200);
+            setTimeout(updateAccelerometerData, 2000);
         };
 
         const updateAccelerometerData = () => {
