@@ -51,10 +51,16 @@
                 ],
             },
             options: {
+                animation: {
+                    duration: 0, // Turn off animation
+                },
                 scales: {
                     x: {
                         type: 'linear',
                         position: 'bottom',
+                        ticks: {
+                            stepSize: 1, // Adjust the step size based on your preference
+                        },
                     },
                     y: {
                         type: 'linear',
