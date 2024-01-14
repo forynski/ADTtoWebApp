@@ -65,19 +65,14 @@
 
         // Function to update the chart with new data
         const updateChart = () => {
-            const timestamp = new Date().toLocaleTimeString();
-
-            // Add data to individual datasets
-            accelerometerChart.data.datasets[0].data.push({ x: timestamp, y: x });
-            accelerometerChart.data.datasets[1].data.push({ x: timestamp, y: y });
-            accelerometerChart.data.datasets[2].data.push({ x: timestamp, y: z });
+            accelerometerChart.data.datasets[0].data = accelerometerChartData.map(entry => ({ x: entry.timestamp, y: entry.x }));
+            accelerometerChart.data.datasets[1].data = accelerometerChartData.map(entry => ({ x: entry.timestamp, y: entry.y }));
+            accelerometerChart.data.datasets[2].data = accelerometerChartData.map(entry => ({ x: entry.timestamp, y: entry.z }));
 
             // Limit the number of data points to keep the chart clean
             const maxDataPoints = 10;
-            if (accelerometerChart.data.datasets[0].data.length > maxDataPoints) {
-                accelerometerChart.data.datasets.forEach(dataset => {
-                    dataset.data.shift();
-                });
+            if (accelerometerChartData.length > maxDataPoints) {
+                accelerometerChartData.shift();
             }
 
             // Update the chart
@@ -111,6 +106,7 @@
                         $('#zValue').text(z);
 
                         // Update the chart with new data
+                        accelerometerChartData.push({ timestamp: new Date().toLocaleTimeString(), x, y, z });
                         updateChart();
                     },
                     error: (xhr, status, error) => {
