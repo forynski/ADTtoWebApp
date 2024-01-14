@@ -1,4 +1,4 @@
-﻿server.js: const express = require('express');
+﻿const express = require('express');
 const http = require('http');
 const path = require('path');
 const { DefaultAzureCredential } = require('@azure/identity');
