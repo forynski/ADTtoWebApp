@@ -13,7 +13,9 @@
   "dependencies": {
     "@azure/digital-twins-core": "^1.1.0",
     "@azure/identity": "^4.0.0",
+    "chart.js": "^4.4.1",
     "express": "^4.18.2",
-    "socket.io": "^4.7.3"
+    "socket.io": "^4.7.3",
+    "ws": "^8.16.0"
   }
 }
