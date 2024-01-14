@@ -77,7 +77,7 @@
             accelerometerChart.data.datasets[2].data = accelerometerChartData.map(entry => ({ x: entry.timestamp, y: entry.z }));
 
             // Limit the number of data points to keep the chart clean
-            const maxDataPoints = 10;
+            const maxDataPoints = 100;
             if (accelerometerChartData.length > maxDataPoints) {
                 accelerometerChartData.shift();
             }
