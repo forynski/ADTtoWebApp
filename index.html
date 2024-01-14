@@ -17,25 +17,23 @@
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>let isFetchingStarted = false;
+        let ws;
 
         const updateAccelerometerData = () => {
             if (isFetchingStarted) {
-                $.ajax({
-                    url: '/api/accelerometer',
-                    method: 'GET',
-                    dataType: 'json',
-                    success: (data) => {
-                        $('#xValue').text(data.x);
-                        $('#yValue').text(data.y);
-                        $('#zValue').text(data.z);
-                        // Update every 2s (2000) or 0.2 (200)
-                        setTimeout(updateAccelerometerData, 200);
-                    },
-                    error: (xhr, status, error) => {
-                        console.error('Error fetching accelerometer data:', xhr, status, error);
-                        setTimeout(updateAccelerometerData, 200);
-                    }
-                });
+                ws = new WebSocket(`ws://${window.location.host}`);
+
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    $('#xValue').text(data.x);
+                    $('#yValue').text(data.y);
+                    $('#zValue').text(data.z);
+                };
+
+                ws.onclose = () => {
+                    console.log('WebSocket connection closed');
+                    setTimeout(updateAccelerometerData, 200);
+                };
             }
         };
 
@@ -46,6 +44,10 @@
 
             if (isFetchingStarted) {
                 updateAccelerometerData();
+            } else {
+                if (ws) {
+                    ws.close();
+                }
             }
         });</script>
 </body>
