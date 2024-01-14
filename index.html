@@ -16,7 +16,7 @@
 
     <button id="toggleFetching">Start Fetching Data</button>
 
-    <canvas id="accelerometerChart" width="400" height="200"></canvas>
+    <canvas id="accelerometerChart" width="400" height="100"></canvas>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -30,7 +30,7 @@
         // Create the chart context
         const ctx = document.getElementById('accelerometerChart').getContext('2d');
         const accelerometerChart = new Chart(ctx, {
-            type: 'scatter',
+            type: 'line',
             data: {
                 datasets: [
                     {
