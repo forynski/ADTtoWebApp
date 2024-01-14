@@ -13,10 +13,83 @@
         <p>Z: <span id="zValue">-</span></p>
     </div>
 
+    <canvas id="accelerometerChart" width="400" height="200"></canvas>
+
     <button id="toggleFetching">Start Fetching Data</button>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>let isFetchingStarted = false;
+        let x, y, z;
+
+        // Create an empty array to store accelerometer data for chart
+        let accelerometerChartData = [];
+
+        // Create the chart context
+        const ctx = document.getElementById('accelerometerChart').getContext('2d');
+        const accelerometerChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'X',
+                        borderColor: 'rgb(255, 99, 132)',
+                        data: accelerometerChartData.map(entry => entry.x),
+                    },
+                    {
+                        label: 'Y',
+                        borderColor: 'rgb(75, 192, 192)',
+                        data: accelerometerChartData.map(entry => entry.y),
+                    },
+                    {
+                        label: 'Z',
+                        borderColor: 'rgb(54, 162, 235)',
+                        data: accelerometerChartData.map(entry => entry.z),
+                    },
+                ],
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                    },
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                    },
+                },
+            },
+        });
+
+        // Function to update the chart with new data
+        const updateChart = () => {
+            accelerometerChart.data.labels.push(new Date().toLocaleTimeString());
+            accelerometerChart.data.datasets[0].data.push(x);
+            accelerometerChart.data.datasets[1].data.push(y);
+            accelerometerChart.data.datasets[2].data.push(z);
+
+            // Limit the number of data points to keep the chart clean
+            const maxDataPoints = 10;
+            if (accelerometerChart.data.labels.length > maxDataPoints) {
+                accelerometerChart.data.labels.shift();
+                accelerometerChart.data.datasets[0].data.shift();
+                accelerometerChart.data.datasets[1].data.shift();
+                accelerometerChart.data.datasets[2].data.shift();
+            }
+
+            accelerometerChart.update();
+
+            // Log chart data for debugging
+            console.log('Chart Labels:', accelerometerChart.data.labels);
+            console.log('Chart Data X:', accelerometerChart.data.datasets[0].data);
+            console.log('Chart Data Y:', accelerometerChart.data.datasets[1].data);
+            console.log('Chart Data Z:', accelerometerChart.data.datasets[2].data);
+
+            // Update every 2s (2000) or 0.2 (200)
+            setTimeout(updateAccelerometerData, 200);
+        };
 
         const updateAccelerometerData = () => {
             if (isFetchingStarted) {
@@ -28,8 +101,12 @@
                         $('#xValue').text(data.x);
                         $('#yValue').text(data.y);
                         $('#zValue').text(data.z);
-                        // Update every 2s (2000) or 0.2 (200)
-                        setTimeout(updateAccelerometerData, 200);
+
+                        // Update the chart with new data
+                        x = data.x;
+                        y = data.y;
+                        z = data.z;
+                        updateChart();
                     },
                     error: (xhr, status, error) => {
                         console.error('Error fetching accelerometer data:', xhr, status, error);
