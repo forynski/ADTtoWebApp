@@ -21,7 +21,7 @@
 
         const updateAccelerometerData = () => {
             if (isFetchingStarted) {
-                // Use secure WebSocket (wss://) instead of ws://
+                // Use a relative WebSocket URL, assuming your server is on the same host and port
                 ws = new WebSocket(`wss://${window.location.host}`);
 
                 ws.onmessage = (event) => {

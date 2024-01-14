@@ -70,7 +70,7 @@ app.get('/api/accelerometer', async (req, res) => {
     }
 });
 
-wss.on('connection', (ws) => {
+wss.on('connection', (wss) => {
     console.log('WebSocket client connected');
 
     ws.on('close', () => {
