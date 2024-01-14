@@ -35,17 +35,17 @@
                     {
                         label: 'X',
                         borderColor: 'rgb(255, 99, 132)',
-                        data: accelerometerChartData.map(entry => ({ x: entry.timestamp, y: entry.x })),
+                        data: [],
                     },
                     {
                         label: 'Y',
                         borderColor: 'rgb(75, 192, 192)',
-                        data: accelerometerChartData.map(entry => ({ x: entry.timestamp, y: entry.y })),
+                        data: [],
                     },
                     {
                         label: 'Z',
                         borderColor: 'rgb(54, 162, 235)',
-                        data: accelerometerChartData.map(entry => ({ x: entry.timestamp, y: entry.z })),
+                        data: [],
                     },
                 ],
             },
@@ -66,19 +66,25 @@
         // Function to update the chart with new data
         const updateChart = () => {
             const timestamp = new Date().toLocaleTimeString();
-            accelerometerChartData.push({ timestamp, x, y, z });
+
+            // Add data to individual datasets
+            accelerometerChart.data.datasets[0].data.push({ x: timestamp, y: x });
+            accelerometerChart.data.datasets[1].data.push({ x: timestamp, y: y });
+            accelerometerChart.data.datasets[2].data.push({ x: timestamp, y: z });
 
             // Limit the number of data points to keep the chart clean
             const maxDataPoints = 10;
-            if (accelerometerChartData.length > maxDataPoints) {
-                accelerometerChartData.shift();
+            if (accelerometerChart.data.datasets[0].data.length > maxDataPoints) {
+                accelerometerChart.data.datasets.forEach(dataset => {
+                    dataset.data.shift();
+                });
             }
 
             // Update the chart
             accelerometerChart.update();
 
             // Log chart data for debugging
-            console.log('Chart Data:', accelerometerChartData);
+            console.log('Chart Data:', accelerometerChart.data);
 
             // Update every 2s (2000) or 0.2 (200)
             setTimeout(updateAccelerometerData, 200);
