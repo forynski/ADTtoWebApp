@@ -21,7 +21,8 @@
 
         const updateAccelerometerData = () => {
             if (isFetchingStarted) {
-                ws = new WebSocket(`ws://${window.location.host}`);
+                // Use secure WebSocket (wss://) instead of ws://
+                ws = new WebSocket(`wss://${window.location.host}`);
 
                 ws.onmessage = (event) => {
                     const data = JSON.parse(event.data);
