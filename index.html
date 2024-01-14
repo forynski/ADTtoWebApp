@@ -19,11 +19,12 @@
 
     <button id="toggleFetching">Start Fetching Data</button>
 
+    <!-- Add a canvas element for the chart -->
     <canvas id="accelerometerChart" width="800" height="400"></canvas>
 
     <script>let isFetchingStarted = false;
-        const ws = new WebSocket('wss://adttowebapp.azurewebsites.net/api/accelerometer');  // Update with your server address
 
+        // Initialize Chart.js
         const ctx = document.getElementById('accelerometerChart').getContext('2d');
         const accelerometerChart = new Chart(ctx, {
             type: 'line',
@@ -64,19 +65,32 @@
             },
         });
 
-        ws.onopen = () => {
-            console.log('WebSocket connection opened');
-        };
+        // Update the WebSocket URL
+        const ws = new WebSocket('wss://adttowebapp.azurewebsites.net/');
 
-        ws.onmessage = (event) => {
+        ws.addEventListener('open', (event) => {
+            console.log('WebSocket connection opened:', event);
+
+            // Implement any additional logic when the WebSocket connection opens
+        });
+
+        ws.addEventListener('message', (event) => {
+            // Handle incoming WebSocket messages (accelerometer data)
             const data = JSON.parse(event.data);
 
+            // Update your UI or chart with the received accelerometer data
+            $('#xValue').text(data.x);
+            $('#yValue').text(data.y);
+            $('#zValue').text(data.z);
+
+            // Update the chart
             const time = new Date().toLocaleTimeString();
             accelerometerChart.data.labels.push(time);
             accelerometerChart.data.datasets[0].data.push(data.x);
             accelerometerChart.data.datasets[1].data.push(data.y);
             accelerometerChart.data.datasets[2].data.push(data.z);
 
+            // Limit the number of data points shown to keep it lightweight
             const maxDataPoints = 10;
             while (accelerometerChart.data.labels.length > maxDataPoints) {
                 accelerometerChart.data.labels.shift();
@@ -85,16 +99,24 @@
                 accelerometerChart.data.datasets[2].data.shift();
             }
 
+            // Update the chart
             accelerometerChart.update();
-        };
+        });
 
-        ws.onclose = () => {
-            console.log('WebSocket connection closed');
-        };
+        ws.addEventListener('close', (event) => {
+            console.log('WebSocket connection closed:', event);
+
+            // Implement any additional logic when the WebSocket connection closes
+        });
+
+        // Handle potential errors
+        ws.addEventListener('error', (error) => {
+            console.error('WebSocket error:', error);
+        });
 
         const updateAccelerometerData = () => {
             if (isFetchingStarted) {
-                // No need for AJAX, as WebSocket will handle real-time updates
+                // No need for AJAX anymore, as WebSocket will handle real-time updates
             }
         };
 

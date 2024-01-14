@@ -1,16 +1,17 @@
 ﻿const express = require('express');
 const http = require('http');
 const path = require('path');
+const WebSocket = require('ws');
 const { DefaultAzureCredential } = require('@azure/identity');
 const { DigitalTwinsClient } = require('@azure/digital-twins-core');
-const WebSocket = require('ws');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({ server }); // Use the existing HTTP server
 
 let digitalTwinsClient;
 
+// Function to establish the connection with Azure Digital Twins
 const connectToAzureDigitalTwins = async () => {
     try {
         const endpointUrl = process.env.YOUR_DIGITAL_TWINS_ENDPOINT_URL;
@@ -30,32 +31,60 @@ const connectToAzureDigitalTwins = async () => {
     }
 };
 
+// Serve static files from the main directory
 app.use(express.static(path.join(__dirname)));
 
+// WebSocket connection handling
+wss.on('connection', (ws) => {
+    console.log('WebSocket client connected');
+
+    // Handle messages from WebSocket clients if needed
+    ws.on('message', (message) => {
+        console.log(`Received message from client: ${message}`);
+    });
+
+    // Handle WebSocket client disconnection
+    ws.on('close', () => {
+        console.log('WebSocket client disconnected');
+    });
+});
+
+// API endpoint to fetch accelerometer data
 app.get('/api/accelerometer', async (req, res) => {
     try {
+        // Check if the client is connected, and if not, establish the connection
         if (!digitalTwinsClient) {
             await connectToAzureDigitalTwins();
         }
 
+        // Fetch accelerometer data from the Digital Twin
         const digitalTwinID = process.env.DIGITAL_TWIN_ID;
         const twinData = await digitalTwinsClient.getDigitalTwin(digitalTwinID);
 
+        // Log fetched accelerometer data
+        console.log('Fetched accelerometer data:', twinData);
+
+        // Extract accelerometer data from the response
         const accelerometerData = {
             x: twinData.body.x,
             y: twinData.body.y,
             z: twinData.body.z,
         };
 
+        // Respond with the accelerometer data
+        res.json(accelerometerData);
+
+        // Broadcast the data to connected WebSocket clients
         wss.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(JSON.stringify(accelerometerData));
             }
         });
-
-        res.json(accelerometerData);
     } catch (error) {
+        // Log the error information
         console.error('Error fetching accelerometer data:', error);
+
+        // Send a detailed error response to help diagnose the issue
         res.status(500).json({
             error: 'Internal Server Error',
             details: error.message,
@@ -66,6 +95,10 @@ app.get('/api/accelerometer', async (req, res) => {
     }
 });
 
+// Start the server
+const PORT = process.env.PORT || 3000;
+
+// Call the connectToAzureDigitalTwins function before starting the server
 connectToAzureDigitalTwins()
     .then(() => {
         server.listen(PORT, () => {
@@ -76,11 +109,3 @@ connectToAzureDigitalTwins()
         console.error('Error during server startup:', error);
         process.exit(1);
     });
-
-wss.on('connection', (ws) => {
-    console.log('Client connected to WebSocket');
-
-    ws.on('close', () => {
-        console.log('Client disconnected from WebSocket');
-    });
-});
