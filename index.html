@@ -22,6 +22,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>let isFetchingStarted = false;
         let x, y, z;
+        let timestampCounter = 0;
 
         // Create an empty array to store accelerometer data for chart
         let accelerometerChartData = [];
@@ -106,7 +107,7 @@
                         $('#zValue').text(z);
 
                         // Update the chart with new data
-                        accelerometerChartData.push({ timestamp: new Date().toLocaleTimeString(), x, y, z });
+                        accelerometerChartData.push({ timestamp: timestampCounter++, x, y, z });
                         updateChart();
                     },
                     error: (xhr, status, error) => {
