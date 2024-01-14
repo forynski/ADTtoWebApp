@@ -1,13 +1,11 @@
 ﻿const express = require('express');
 const http = require('http');
 const path = require('path');
-const WebSocket = require('ws');
 const { DefaultAzureCredential } = require('@azure/identity');
 const { DigitalTwinsClient } = require('@azure/digital-twins-core');
 
 const app = express();
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server }); // Use the existing HTTP server
 
 let digitalTwinsClient;
 
@@ -34,20 +32,24 @@ const connectToAzureDigitalTwins = async () => {
 // Serve static files from the main directory
 app.use(express.static(path.join(__dirname)));
 
-// WebSocket connection handling
-wss.on('connection', (ws) => {
-    console.log('WebSocket client connected');
+/// Define a function to get a value from contents
+const getValueFromContents = (contents, propertyName) => {
+    if (contents && contents.body) {
+        const property = contents.body[propertyName];
 
-    // Handle messages from WebSocket clients if needed
-    ws.on('message', (message) => {
-        console.log(`Received message from client: ${message}`);
-    });
+        if (property !== undefined) {
+            return property;
+        } else {
+            console.log(`Property '${propertyName}' not found in the contents.`);
+            return 'N/A';
+        }
+    } else {
+        console.log('Contents array or body property is undefined.');
+        return 'N/A';
+    }
+};
 
-    // Handle WebSocket client disconnection
-    ws.on('close', () => {
-        console.log('WebSocket client disconnected');
-    });
-});
+
 
 // API endpoint to fetch accelerometer data
 app.get('/api/accelerometer', async (req, res) => {
@@ -71,15 +73,9 @@ app.get('/api/accelerometer', async (req, res) => {
             z: twinData.body.z,
         };
 
+
         // Respond with the accelerometer data
         res.json(accelerometerData);
-
-        // Broadcast the data to connected WebSocket clients
-        wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(accelerometerData));
-            }
-        });
     } catch (error) {
         // Log the error information
         console.error('Error fetching accelerometer data:', error);
@@ -94,6 +90,8 @@ app.get('/api/accelerometer', async (req, res) => {
         });
     }
 });
+
+
 
 // Start the server
 const PORT = process.env.PORT || 3000;
