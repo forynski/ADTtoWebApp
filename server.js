@@ -10,7 +10,6 @@ const app = express();
 const server = http.createServer(app);
 
 let digitalTwinsClient;
-let isThresholdExceeded = false; // New variable to track threshold exceeding
 
 // Function to establish the connection with Azure Digital Twins
 const connectToAzureDigitalTwins = async () => {
@@ -67,16 +66,16 @@ app.get('/api/accelerometer', async (req, res) => {
         // Log fetched accelerometer data
         console.log('Fetched accelerometer data:', twinData);
 
-        // Extract accelerometer data from the response
+        // Extract accelerometer data and threshold exceeded status from the response
         const accelerometerData = {
             x: twinData.body.x,
             y: twinData.body.y,
             z: twinData.body.z,
         };
-
+        const isThresholdExceeded = twinData.body.isThresholdExceeded || false; // Default value is false if not provided
 
         // Respond with the accelerometer data
-        res.json(accelerometerData);
+        res.json({ ...accelerometerData, isThresholdExceeded });
     } catch (error) {
         // Log the error information
         console.error('Error fetching accelerometer data:', error);
