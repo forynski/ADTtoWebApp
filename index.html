@@ -23,6 +23,7 @@
     <script>let isFetchingStarted = false;
         let x, y, z;
         let timestampCounter = 0;
+        let isThresholdExceeded = false; // New variable to track threshold exceeding
 
         // Create an empty array to store accelerometer data for chart
         let accelerometerChartData = [];
@@ -117,6 +118,7 @@
 
                         // Check if any value is below -2 or above 2
                         if (x < -2 || x > 2 || y < -2 || y > 2 || z < -2 || z > 2) {
+                            isThresholdExceeded = true; // Set threshold exceeded flag
                             alert('Warning: Accelerometer threshold exceeded!');
                         }
 
@@ -141,6 +143,5 @@
                 updateAccelerometerData();
             }
         });</script>
-
 </body>
 </html>

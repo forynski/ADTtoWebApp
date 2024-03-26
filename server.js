@@ -10,6 +10,7 @@ const app = express();
 const server = http.createServer(app);
 
 let digitalTwinsClient;
+let isThresholdExceeded = false; // New variable to track threshold exceeding
 
 // Function to establish the connection with Azure Digital Twins
 const connectToAzureDigitalTwins = async () => {
@@ -34,7 +35,7 @@ const connectToAzureDigitalTwins = async () => {
 // Serve static files from the main directory
 app.use(express.static(path.join(__dirname)));
 
-/// Define a function to get a value from contents
+// Define a function to get a value from contents
 const getValueFromContents = (contents, propertyName) => {
     if (contents && contents.body) {
         const property = contents.body[propertyName];
@@ -72,6 +73,17 @@ app.get('/api/accelerometer', async (req, res) => {
             y: twinData.body.y,
             z: twinData.body.z,
         };
+
+        // Update the digital twin if the threshold is exceeded
+        if (isThresholdExceeded) {
+            await digitalTwinsClient.updateDigitalTwin(digitalTwinID, [
+                {
+                    op: 'replace',
+                    path: '/isThresholdExceeded',
+                    value: true,
+                },
+            ]);
+        }
 
         // Respond with the accelerometer data
         res.json(accelerometerData);
