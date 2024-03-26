@@ -74,16 +74,6 @@ app.get('/api/accelerometer', async (req, res) => {
             z: twinData.body.z,
         };
 
-        // Update the digital twin if the threshold is exceeded
-        if (isThresholdExceeded) {
-            await digitalTwinsClient.updateDigitalTwin(digitalTwinID, [
-                {
-                    op: 'replace',
-                    path: '/isThresholdExceeded',
-                    value: true,
-                },
-            ]);
-        }
 
         // Respond with the accelerometer data
         res.json(accelerometerData);
