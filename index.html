@@ -86,24 +86,11 @@
                 accelerometerChartData.shift();
             }
 
-            // Display warning on the chart if threshold is exceeded
-            if (isThresholdExceeded) {
-                // Example: Draw a red line on the chart to indicate threshold exceeded
-                const ctx = accelerometerChart.ctx;
-                ctx.beginPath();
-                ctx.moveTo(0, 50); // Change coordinates based on your chart configuration
-                ctx.lineTo(400, 50); // Change coordinates based on your chart configuration
-                ctx.strokeStyle = 'red';
-                ctx.stroke();
-
-                // Add text indicating threshold exceeded
-                ctx.font = '14px Arial';
-                ctx.fillStyle = 'red';
-                ctx.fillText('Threshold Exceeded', 10, 40); // Adjust text position based on your chart layout
-            }
-
             // Update the chart
             accelerometerChart.update();
+
+            // Log chart data for debugging
+            console.log('Chart Data:', accelerometerChart.data);
 
             // Update every 2s (2000) or 0.2 (200)
             setTimeout(updateAccelerometerData, 200);
@@ -121,26 +108,23 @@
                         y = data.y;
                         z = data.z;
 
+                        // Log values for debugging
+                        console.log('X:', x, 'Y:', y, 'Z:', z);
+
                         // Update the displayed values
                         $('#xValue').text(x);
                         $('#yValue').text(y);
                         $('#zValue').text(z);
 
-                        // Fetch isThresholdExceeded from the server
-                        $.ajax({
-                            url: '/api/threshold',
-                            method: 'GET',
-                            dataType: 'json',
-                            success: (response) => {
-                                isThresholdExceeded = response.isThresholdExceeded;
-                                // Update the chart with new data
-                                accelerometerChartData.push({ timestamp: timestampCounter++, x, y, z });
-                                updateChart();
-                            },
-                            error: (xhr, status, error) => {
-                                console.error('Error fetching threshold status:', xhr, status, error);
-                            }
-                        });
+                        // Check if any value is below -2 or above 2
+                        if (x < -2 || x > 2 || y < -2 || y > 2 || z < -2 || z > 2) {
+                            isThresholdExceeded = true; // Set threshold exceeded flag
+                            alert('Warning: Accelerometer threshold exceeded!');
+                        }
+
+                        // Update the chart with new data
+                        accelerometerChartData.push({ timestamp: timestampCounter++, x, y, z });
+                        updateChart();
                     },
                     error: (xhr, status, error) => {
                         console.error('Error fetching accelerometer data:', xhr, status, error);
