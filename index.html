@@ -115,6 +115,11 @@
                         $('#yValue').text(y);
                         $('#zValue').text(z);
 
+                        // Check if any value is below -2 or above 2
+                        if (x < -2 || x > 2 || y < -2 || y > 2 || z < -2 || z > 2) {
+                            alert('Warning: Accelerometer threshold exceeded!');
+                        }
+
                         // Update the chart with new data
                         accelerometerChartData.push({ timestamp: timestampCounter++, x, y, z });
                         updateChart();
@@ -136,5 +141,6 @@
                 updateAccelerometerData();
             }
         });</script>
+
 </body>
 </html>

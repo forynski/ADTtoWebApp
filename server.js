@@ -1,4 +1,6 @@
-﻿const express = require('express');
+﻿// server.js
+
+const express = require('express');
 const http = require('http');
 const path = require('path');
 const { DefaultAzureCredential } = require('@azure/identity');
@@ -49,8 +51,6 @@ const getValueFromContents = (contents, propertyName) => {
     }
 };
 
-
-
 // API endpoint to fetch accelerometer data
 app.get('/api/accelerometer', async (req, res) => {
     try {
@@ -73,7 +73,6 @@ app.get('/api/accelerometer', async (req, res) => {
             z: twinData.body.z,
         };
 
-
         // Respond with the accelerometer data
         res.json(accelerometerData);
     } catch (error) {
@@ -91,8 +90,6 @@ app.get('/api/accelerometer', async (req, res) => {
     }
 });
 
-
-
 // Start the server
 const PORT = process.env.PORT || 3000;
 
@@ -106,4 +103,4 @@ connectToAzureDigitalTwins()
     .catch((error) => {
         console.error('Error during server startup:', error);
         process.exit(1);
-    }); 
+    });
