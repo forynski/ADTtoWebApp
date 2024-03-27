@@ -1,45 +1,4 @@
-﻿/* Apply basic styles to the body */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
-/* Style container */
-.container {
-    background-color: #fff;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Style title */
-.title {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-/* Style data container */
-.data-container {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-/* Style data items */
-.data-item {
-    text-align: center;
-}
-
-/* Style values */
-.value {
-    font-weight: bold;
-}
-
-/* Style fetch button */
+﻿/* Style fetch button */
 .fetch-button {
     display: block;
     margin: 0 auto;
