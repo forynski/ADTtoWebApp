@@ -54,7 +54,6 @@
         },
     });
 
-
     // Function to update the chart with new data
     const updateChart = () => {
         accelerometerChart.data.datasets[0].data = accelerometerChartData.map(entry => ({ x: entry.timestamp, y: entry.x }));
@@ -124,4 +123,3 @@
         }
     });
 });
-
