@@ -68,6 +68,6 @@ body {
     display: block;
     margin: 0 auto;
     width: 100%; /* Make the chart full width */
-    /*max-width: 600px;*/ /* Limit maximum width for better readability */
-    height: auto;
+    height: 300px; /* Set a fixed height */
+    max-height: 50vh; /* Limit maximum height to 50% of viewport height */
 }
