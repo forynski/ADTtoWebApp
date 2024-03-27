@@ -63,11 +63,9 @@ body {
         background-color: #0056b3;
     }
 
-/* Style chart */
-.chart {
-    display: block;
-    margin: 0 auto;
-    width: 100%; /* Make the chart full width */
-    height: 300px; /* Set a fixed height */
-    max-height: 50vh; /* Limit maximum height to 50% of viewport height */
+/* Style chart container */
+.chart-container {
+    position: relative;
+    height: 60vh; /* Initial height */
+    width: 80vw; /* Initial width */
 }

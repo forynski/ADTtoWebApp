@@ -8,26 +8,28 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="title">Accelerometer Data</h1>
+        <h1>Accelerometer Data</h1>
 
         <div class="data-container">
             <div class="data-item">
                 <p>X:</p>
-                <span id="xValue" class="value">-</span>
+                <span id="xValue">-</span>
             </div>
             <div class="data-item">
                 <p>Y:</p>
-                <span id="yValue" class="value">-</span>
+                <span id="yValue">-</span>
             </div>
             <div class="data-item">
                 <p>Z:</p>
-                <span id="zValue" class="value">-</span>
+                <span id="zValue">-</span>
             </div>
         </div>
 
         <button id="toggleFetching" class="fetch-button">Start Fetching Data</button>
 
-        <canvas id="accelerometerChart" class="chart"></canvas>
+        <div class="chart-container" style="position: relative; height: 60vh; width: 80vw;">
+            <canvas id="accelerometerChart"></canvas>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
