@@ -49,8 +49,11 @@
                     position: 'left',
                 },
             },
+            responsive: true, // Enable responsiveness
+            maintainAspectRatio: false, // Disable aspect ratio for full width
         },
     });
+
 
     // Function to update the chart with new data
     const updateChart = () => {
