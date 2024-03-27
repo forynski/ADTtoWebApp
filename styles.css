@@ -1,4 +1,24 @@
-﻿/* Style fetch button */
+﻿/* Style for the title */
+h1 {
+    text-align: center;
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Style for the accelerometer data */
+#accelerometerData {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+    /* Style for XYZ values */
+    #accelerometerData p {
+        font-size: 18px;
+        color: #666;
+    }
+
+/* Style for the fetch button */
 .fetch-button {
     display: block;
     margin: 0 auto;
