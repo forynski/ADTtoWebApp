@@ -47,6 +47,8 @@
                 y: {
                     type: 'linear',
                     position: 'left',
+                    min: -3, // Set minimum y-axis value
+                    max: 3, // Set maximum y-axis value
                 },
             },
             responsive: true, // Enable responsiveness
@@ -61,7 +63,7 @@
         accelerometerChart.data.datasets[2].data = accelerometerChartData.map(entry => ({ x: entry.timestamp, y: entry.z }));
 
         // Limit the number of data points to keep the chart clean
-        const maxDataPoints = 20; // Adjust the maximum data points based on your preference
+        const maxDataPoints = 30; // Adjust the maximum data points based on your preference
         if (accelerometerChartData.length > maxDataPoints) {
             accelerometerChartData.shift();
         }
