@@ -1,11 +1,4 @@
-﻿/* Reset default margin and padding */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* Apply basic styles to the body */
+﻿/* Apply basic styles to the body */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
@@ -62,10 +55,3 @@ body {
     .fetch-button:hover {
         background-color: #0056b3;
     }
-
-/* Style chart container */
-.chart-container {
-    position: relative;
-    height: 60vh; /* Initial height */
-    width: 80vw; /* Initial width */
-}

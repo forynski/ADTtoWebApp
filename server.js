@@ -10,6 +10,7 @@ const app = express();
 const server = http.createServer(app);
 
 let digitalTwinsClient;
+let isThresholdExceeded = false; // New variable to track threshold exceeding
 
 // Function to establish the connection with Azure Digital Twins
 const connectToAzureDigitalTwins = async () => {
@@ -34,7 +35,24 @@ const connectToAzureDigitalTwins = async () => {
 // Serve static files from the main directory
 app.use(express.static(path.join(__dirname)));
 
-// API endpoint to fetch accelerometer data and threshold
+// Define a function to get a value from contents
+const getValueFromContents = (contents, propertyName) => {
+    if (contents && contents.body) {
+        const property = contents.body[propertyName];
+
+        if (property !== undefined) {
+            return property;
+        } else {
+            console.log(`Property '${propertyName}' not found in the contents.`);
+            return 'N/A';
+        }
+    } else {
+        console.log('Contents array or body property is undefined.');
+        return 'N/A';
+    }
+};
+
+// API endpoint to fetch accelerometer data
 app.get('/api/accelerometer', async (req, res) => {
     try {
         // Check if the client is connected, and if not, establish the connection
@@ -42,22 +60,23 @@ app.get('/api/accelerometer', async (req, res) => {
             await connectToAzureDigitalTwins();
         }
 
-        // Fetch accelerometer data and threshold from the Digital Twin
+        // Fetch accelerometer data from the Digital Twin
         const digitalTwinID = process.env.DIGITAL_TWIN_ID;
         const twinData = await digitalTwinsClient.getDigitalTwin(digitalTwinID);
 
-        // Extract accelerometer data and threshold from the response
+        // Log fetched accelerometer data
+        console.log('Fetched accelerometer data:', twinData);
+
+        // Extract accelerometer data from the response
         const accelerometerData = {
             x: twinData.body.x,
             y: twinData.body.y,
             z: twinData.body.z,
         };
 
-        // Respond with the accelerometer data and threshold
-        res.json({
-            accelerometerData,
-            threshold: twinData.body.isThresholdExceeded,
-        });
+
+        // Respond with the accelerometer data
+        res.json(accelerometerData);
     } catch (error) {
         // Log the error information
         console.error('Error fetching accelerometer data:', error);
