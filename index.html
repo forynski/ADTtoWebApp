@@ -23,7 +23,6 @@
     <script>let isFetchingStarted = false;
         let x, y, z;
         let timestampCounter = 0;
-        let isThresholdExceeded = false; // New variable to track threshold exceeding
 
         // Create an empty array to store accelerometer data for chart
         let accelerometerChartData = [];
@@ -104,9 +103,9 @@
                     dataType: 'json',
                     success: (data) => {
                         // Update the values
-                        x = data.x;
-                        y = data.y;
-                        z = data.z;
+                        x = data.accelerometerData.x;
+                        y = data.accelerometerData.y;
+                        z = data.accelerometerData.z;
 
                         // Log values for debugging
                         console.log('X:', x, 'Y:', y, 'Z:', z);
@@ -116,9 +115,8 @@
                         $('#yValue').text(y);
                         $('#zValue').text(z);
 
-                        // Check if any value is below -2 or above 2
-                        if (x < -2 || x > 2 || y < -2 || y > 2 || z < -2 || z > 2) {
-                            isThresholdExceeded = true; // Set threshold exceeded flag
+                        // Check if the threshold is exceeded
+                        if (data.threshold) {
                             alert('Warning: Accelerometer threshold exceeded!');
                         }
 
