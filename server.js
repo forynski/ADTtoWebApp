@@ -52,7 +52,7 @@ const getValueFromContents = (contents, propertyName) => {
     }
 };
 
-// API endpoint to fetch accelerometer data
+// API endpoint to fetch accelerometer data and isThresholdExceeded variable
 app.get('/api/accelerometer', async (req, res) => {
     try {
         // Check if the client is connected, and if not, establish the connection
@@ -74,9 +74,8 @@ app.get('/api/accelerometer', async (req, res) => {
             z: twinData.body.z,
         };
 
-
-        // Respond with the accelerometer data
-        res.json(accelerometerData);
+        // Respond with the accelerometer data and isThresholdExceeded value
+        res.json({ accelerometerData, isThresholdExceeded });
     } catch (error) {
         // Log the error information
         console.error('Error fetching accelerometer data:', error);
@@ -91,6 +90,7 @@ app.get('/api/accelerometer', async (req, res) => {
         });
     }
 });
+
 
 // Start the server
 const PORT = process.env.PORT || 3000;
