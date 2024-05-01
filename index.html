@@ -9,13 +9,12 @@
 <body>
     <h1>Accelerometer Data</h1>
 
-    <div id="accelerometerData">
-        <div id="xyzValues"></div>
-    </div>
-
-    <div id="chartAndControls">
-        <canvas id="accelerometerChart" width="400" height="100"></canvas>
-        <button id="toggleFetching" class="fetch-button">Start Fetching Data</button>
+    <div id="chartContainer">
+        <div id="xyzValues" style="float: left;"></div>
+        <div id="chartAndControls" style="margin-left: 150px;">
+            <canvas id="accelerometerChart" width="400" height="100"></canvas>
+            <button id="toggleFetching" class="fetch-button">Start Fetching Data</button>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -60,9 +59,13 @@
                     x: {
                         type: 'linear',
                         position: 'bottom',
-                        scaleLabel: {
+                        title: {
                             display: true,
-                            labelString: 'Accelerometer Position',
+                            text: 'Accelerometer Position',
+                            color: 'black', // You can adjust the color here
+                            font: {
+                                size: 16 // You can adjust the font size here
+                            },
                         },
                         ticks: {
                             stepSize: 1,
@@ -71,9 +74,13 @@
                     y: {
                         type: 'linear',
                         position: 'left',
-                        scaleLabel: {
+                        title: {
                             display: true,
-                            labelString: 'Time Interval',
+                            text: 'Time Interval',
+                            color: 'black', // You can adjust the color here
+                            font: {
+                                size: 16 // You can adjust the font size here
+                            },
                         },
                     },
                 },
@@ -107,10 +114,6 @@
                         x = data.x;
                         y = data.y;
                         z = data.z;
-
-                        $('#xValue').text(x);
-                        $('#yValue').text(y);
-                        $('#zValue').text(z);
 
                         $('#xyzValues').prepend(`<p>X: ${x}, Y: ${y}, Z: ${z}</p>`);
 
