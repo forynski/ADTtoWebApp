@@ -17,21 +17,17 @@
 
     <button id="toggleFetching" class="fetch-button">Start Fetching Data</button>
 
-    <div style="width: 400px; height: 300px; margin: 0 auto;">
-        <canvas id="accelerometerChart" width="400" height="200"></canvas>
-    </div>
+    <canvas id="accelerometerChart" width="400" height="100"></canvas>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>let isFetchingStarted = false;
         let x, y, z;
         let timestampCounter = 0;
-        let isThresholdExceeded = false; // New variable to track threshold exceeding
+        let isThresholdExceeded = false;
 
-        // Create an empty array to store accelerometer data for chart
         let accelerometerChartData = [];
 
-        // Create the chart context
         const ctx = document.getElementById('accelerometerChart').getContext('2d');
         const accelerometerChart = new Chart(ctx, {
             type: 'line',
@@ -59,18 +55,18 @@
             },
             options: {
                 animation: {
-                    duration: 0, // Turn off animation
+                    duration: 0,
                 },
                 scales: {
                     x: {
                         type: 'linear',
                         position: 'bottom',
-                        ticks: {
-                            stepSize: 1, // Adjust the step size based on your preference
-                        },
                         scaleLabel: {
                             display: true,
-                            labelString: 'Time Interval' // Add label for x-axis
+                            labelString: 'Accelerometer Position', // X axis label
+                        },
+                        ticks: {
+                            stepSize: 1,
                         },
                     },
                     y: {
@@ -78,80 +74,27 @@
                         position: 'left',
                         scaleLabel: {
                             display: true,
-                            labelString: 'Accelerometer Position' // Add label for y-axis
+                            labelString: 'Time Interval', // Y axis label
                         },
                     },
                 },
-                plugins: {
-                    annotation: {
-                        annotations: {
-                            line1: {
-                                type: 'line',
-                                mode: 'vertical',
-                                scaleID: 'x',
-                                value: 0, // Adjust the value according to your preference
-                                borderColor: 'red',
-                                borderWidth: 1,
-                                label: {
-                                    content: 'Accelerometer Position', // Label for the vertical line
-                                    enabled: true,
-                                    position: 'top',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                                    fontSize: 10,
-                                    padding: {
-                                        top: 4,
-                                        bottom: 4,
-                                        left: 4,
-                                        right: 4
-                                    }
-                                }
-                            },
-                            line2: {
-                                type: 'line',
-                                mode: 'horizontal',
-                                scaleID: 'y',
-                                value: 0, // Adjust the value according to your preference
-                                borderColor: 'green',
-                                borderWidth: 1,
-                                label: {
-                                    content: 'Time Interval', // Label for the horizontal line
-                                    enabled: true,
-                                    position: 'right',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-                                    fontSize: 10,
-                                    padding: {
-                                        top: 4,
-                                        bottom: 4,
-                                        left: 4,
-                                        right: 4
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
             },
         });
 
-        // Function to update the chart with new data
         const updateChart = () => {
             accelerometerChart.data.datasets[0].data = accelerometerChartData.map(entry => ({ x: entry.timestamp, y: entry.x }));
             accelerometerChart.data.datasets[1].data = accelerometerChartData.map(entry => ({ x: entry.timestamp, y: entry.y }));
             accelerometerChart.data.datasets[2].data = accelerometerChartData.map(entry => ({ x: entry.timestamp, y: entry.z }));
 
-            // Limit the number of data points to keep the chart clean
-            const maxDataPoints = 20; // Adjust the maximum data points based on your preference
+            const maxDataPoints = 20;
             if (accelerometerChartData.length > maxDataPoints) {
                 accelerometerChartData.shift();
             }
 
-            // Update the chart
             accelerometerChart.update();
 
-            // Log chart data for debugging
             console.log('Chart Data:', accelerometerChart.data);
 
-            // Update every 2s (2000) or 0.2 (200)
             setTimeout(updateAccelerometerData, 200);
         };
 
@@ -162,26 +105,21 @@
                     method: 'GET',
                     dataType: 'json',
                     success: (data) => {
-                        // Update the values
                         x = data.x;
                         y = data.y;
                         z = data.z;
 
-                        // Log values for debugging
                         console.log('X:', x, 'Y:', y, 'Z:', z);
 
-                        // Update the displayed values
                         $('#xValue').text(x);
                         $('#yValue').text(y);
                         $('#zValue').text(z);
 
-                        // Check if any value is below -2 or above 2
                         if (x < -2 || x > 2 || y < -2 || y > 2 || z < -2 || z > 2) {
-                            isThresholdExceeded = true; // Set threshold exceeded flag
+                            isThresholdExceeded = true;
                             alert('Warning: Accelerometer threshold exceeded!');
                         }
 
-                        // Update the chart with new data
                         accelerometerChartData.push({ timestamp: timestampCounter++, x, y, z });
                         updateChart();
                     },
