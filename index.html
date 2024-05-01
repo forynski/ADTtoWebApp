@@ -10,14 +10,13 @@
     <h1>Accelerometer Data</h1>
 
     <div id="accelerometerData">
-        <p>X: <span id="xValue">-</span></p>
-        <p>Y: <span id="yValue">-</span></p>
-        <p>Z: <span id="zValue">-</span></p>
+        <div id="xyzValues"></div>
     </div>
 
-    <button id="toggleFetching" class="fetch-button">Start Fetching Data</button>
-
-    <canvas id="accelerometerChart" width="400" height="100"></canvas>
+    <div id="chartAndControls">
+        <canvas id="accelerometerChart" width="400" height="100"></canvas>
+        <button id="toggleFetching" class="fetch-button">Start Fetching Data</button>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -63,7 +62,7 @@
                         position: 'bottom',
                         scaleLabel: {
                             display: true,
-                            labelString: 'Accelerometer Position', // X axis label
+                            labelString: 'Accelerometer Position',
                         },
                         ticks: {
                             stepSize: 1,
@@ -74,7 +73,7 @@
                         position: 'left',
                         scaleLabel: {
                             display: true,
-                            labelString: 'Time Interval', // Y axis label
+                            labelString: 'Time Interval',
                         },
                     },
                 },
@@ -109,11 +108,11 @@
                         y = data.y;
                         z = data.z;
 
-                        console.log('X:', x, 'Y:', y, 'Z:', z);
-
                         $('#xValue').text(x);
                         $('#yValue').text(y);
                         $('#zValue').text(z);
+
+                        $('#xyzValues').prepend(`<p>X: ${x}, Y: ${y}, Z: ${z}</p>`);
 
                         if (x < -2 || x > 2 || y < -2 || y > 2 || z < -2 || z > 2) {
                             isThresholdExceeded = true;
