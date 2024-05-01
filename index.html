@@ -17,7 +17,9 @@
 
     <button id="toggleFetching" class="fetch-button">Start Fetching Data</button>
 
-    <canvas id="accelerometerChart" width="400" height="200"></canvas>
+    <div style="width: 400px; height: 300px; margin: 0 auto;">
+        <canvas id="accelerometerChart" width="400" height="200"></canvas>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -93,7 +95,9 @@
                                 label: {
                                     content: 'Accelerometer Position', // Label for the vertical line
                                     enabled: true,
-                                    position: 'top'
+                                    position: 'top',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                                    fontSize: 10,
                                 }
                             },
                             line2: {
@@ -106,7 +110,9 @@
                                 label: {
                                     content: 'Time Interval', // Label for the horizontal line
                                     enabled: true,
-                                    position: 'right'
+                                    position: 'right',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+                                    fontSize: 10,
                                 }
                             }
                         }
